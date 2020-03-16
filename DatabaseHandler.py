@@ -6,27 +6,21 @@ load_dotenv()
 env_pw = os.getenv('DB_PW')
 
 
-
-
 def db_connector(func):
     def wrapper_connection_(*args, **kwargs):
         try:
-            print('ihappen')
             connection = psycopg2.connect(user='testbot',
                                           password=env_pw,
                                           host='localhost',
                                           port='5432',
                                           database='test')
+
             cursor = connection.cursor()
             # Print propertiies of connection
             print(connection.get_dsn_parameters(), '\n')
     
-            # Print PSQL version
-
+            # Query Function to be called
             query_function = func(cursor, *args, **kwargs)
-            record = cursor.fetchone()
-            print('You are connected to: ', record, '\n')
-
 
         except (Exception, psycopg2.Error) as error :
             print('Error connecting to PSQL: ', error)
@@ -42,7 +36,10 @@ def db_connector(func):
 
 @db_connector
 def test(cursor):
-    return cursor.execute('SELECT version();')
+    cursor.execute('SELECT version();')
+    record = cursor.fetchone()
+    print('You are connected to: ', record, '\n')
+
 
 @db_connector
 def select(cursor):
@@ -53,14 +50,11 @@ def select(cursor):
         print("id = ", row[0], )
         print("Title = ", row[1])
         print("year  = ", row[2])
-        print("Coounry = ", row[3], )
+        print("Country = ", row[3], )
         print("genre= ", row[4])
         print("time  = ", row[6], "\n")
-    return cursor.execute('SELECT * FROM filmer ;')
-
 
 
 
 test()
-
 select()
