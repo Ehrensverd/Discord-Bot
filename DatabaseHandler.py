@@ -44,5 +44,16 @@ def db_connector(func):
 def test(cursor):
     return cursor.execute('SELECT version();')
 
+@db_connector
+def select(cursor):
+    cursor.execute('SELECT * FROM filmer ;')
+    record = cursor.fetchall()
+    print(record)
+    return cursor.execute('SELECT * FROM filmer ;')
+
+
+
 
 test()
+
+select()
