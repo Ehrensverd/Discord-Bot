@@ -48,7 +48,14 @@ def test(cursor):
 def select(cursor):
     cursor.execute('SELECT * FROM filmer ;')
     record = cursor.fetchall()
-    print(record)
+    print("Print each row and it's columns values")
+    for row in record:
+        print("id = ", row[0], )
+        print("Title = ", row[1])
+        print("year  = ", row[2])
+        print("Coounry = ", row[3], )
+        print("genre= ", row[4])
+        print("time  = ", row[6], "\n")
     return cursor.execute('SELECT * FROM filmer ;')
 
 
