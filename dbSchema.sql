@@ -9,6 +9,8 @@ userNumber smallint not null
 );
 
 
+GRANT SELECT, INSERT ON discord_users TO testbot;
+
 
 CREATE TABLE IF NOT EXISTS ping_score(
 

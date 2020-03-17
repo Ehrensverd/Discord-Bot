@@ -36,6 +36,7 @@ def db_connector(func):
 
 @db_connector
 def test(cursor):
+    print('Start of test')
     cursor.execute('SELECT version();')
     record = cursor.fetchone()
     print('You are connected to: ', record, '\n')
@@ -54,7 +55,3 @@ def select(cursor):
         print("genre= ", row[4])
         print("time  = ", row[6], "\n")
 
-
-
-test()
-select()
