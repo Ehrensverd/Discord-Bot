@@ -25,18 +25,8 @@ async def on_ready():
         f'{guild.name}(id: {guild.id})'
     )
 
-
-
-    # Get Array of members
-    member_list = guild.members
-
-    #Put members in dictionary with their ID as key
-    member_dict = {}
-    for x in member_list:
-        member_dict[x.id] = x
-
     #Send members to boterator to ensure db is synced
-    boterate.sync_members(member_dict)
+    boterate.sync_members(guild.members)
 
 
     print(f'{client.user} has connected to Discord!')
@@ -44,17 +34,3 @@ async def on_ready():
 
 client.run(BOT_TOKEN)
 
-
-
-
-
-# code snippets
-"""
-find spesified member 
-  member = discord.utils.find(lambda m: m.id == 166005373356998656, guild.members)
-
-
-    handler.insert_user(member)
-    handler.select_all_members()
-
-"""

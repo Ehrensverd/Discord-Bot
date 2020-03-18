@@ -6,7 +6,6 @@ class BotOperator:
 
      """
 
-
     def __init__(self):
         pass
 
@@ -16,20 +15,24 @@ class BotOperator:
 
         print('Starting sync_members')
         # Make set of tuples from db with members
-        db_members = set(db_handler.select_all_members())
+        db_members = set(self.get_members())
 
-        # Make set of tuples from dicitionary
-        disc_members = set([(k, v.name, v.discriminator) for k, v in members.items()])
+        # Make set of tuples from dictionary
+        disc_members = set()
+        for x in members:
+            disc_members.add((x.id, x.name, x.discriminator))
+
 
         # If both are equal then jobs done!
         if disc_members == db_members:
+            print('DB up to date!')
             return
 
         # Make two sets New users to be inserted, old users to be updated
 
         # Remove all that are equal
         disc_members.difference_update(db_members)
-
+        new_set = set()
         # Iterate over both sets and insert new users
         for disc_user in disc_members:
             user_id = disc_user[0]
@@ -40,20 +43,18 @@ class BotOperator:
                     break
             if new_user:
                 db_handler.insert_user(disc_user)
+                new_set.add(disc_user)
 
+        print('Added', len(new_set), 'users.')
 
-        # Get new updated set from db and remove equals.
-        # Make set of tuples from db with members
-        db_members = set(db_handler.select_all_members())
+        # Filter newly added users.
+        disc_members.difference_update(new_set)
 
-        # Make set of tuples from dicitionary
-        disc_members = set([(k, v.name, v.discriminator) for k, v in members.items()])
-        disc_members.difference(db_members)
-
-        # Remaining in sets are users who exist in db but need to be updated name or discriminator.
+        # Remaining  are users who exist in db but need field updated.
         for user in disc_members:
-            db_handler.update_user(user)
-
+            self.update_user(user)
+        print('Updated', len(disc_members), 'users')
+        print('DB has been updated.')
         #Return true if db sync was performed or not needed, false if db could not be reached or changed
         return
 
@@ -71,7 +72,6 @@ class BotOperator:
         """Changes name and / or discirinator of existing user. does not change ID"""
         db_handler.update_user(user)
 
-    def retrieve_db_members(self):
+    def get_members(self):
         """Preforms a query and retrieves members as a list"""
-
-        return db_handler.members()
+        return db_handler.select_all_members()

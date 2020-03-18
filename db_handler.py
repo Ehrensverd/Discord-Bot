@@ -45,10 +45,10 @@ def test(cursor):
 @db_connector
 def insert_user(cursor, user):
     """Takes a discord user object and inserts it to db table discord_users"""
-
+    print('Inserting : ', user, 'into db')
     postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING"""
     cursor.execute(postgres_insert_query, user)
-    print('Added user: ', cursor.fetchone() ,' to database')
+    print('Added user: ', find_member_id(cursor, user[0]), 'to database')
 
 @db_connector
 def update_user(cursor, user_tuple):
@@ -69,10 +69,11 @@ def update_user(cursor, user_tuple):
 @db_connector
 def select_all_members(cursor):
     """Returns all members of db table discord_users"""
+    print('Retrieving all discord users')
     cursor.execute('SELECT * FROM discord_users ;')
     return cursor.fetchall()
 
-@db_connector
+
 def find_member_id(cursor, user_id):
     """finds and returns member as tuplet. None if not found"""
     postgres_select_query = """ SELECT * FROM discord_users WHERE userID =%s"""
