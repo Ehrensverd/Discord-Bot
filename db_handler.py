@@ -45,19 +45,27 @@ def test(cursor):
 @db_connector
 def insert_user(cursor, user):
     """Takes a discord user object and inserts it to db table discord_users"""
-    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING;"""
-    record_to_insert = (user.id, user.name, user.discriminator)
+    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING"""
+    record_to_insert = (user.id, user.name, int(user.discriminator))
     cursor.execute(postgres_insert_query, record_to_insert)
 
+@db_connector
+def update_user(cursor, user):
+    """ Updates name or discriminator of existing user by id"""
+    postgres_update_query = """ UPDATE discord_users set userName=%s, userNumber=%s where userID=%s ON CONFLICT DO NOTHING"""
+    record_to_insert = (user.name, int(user.discriminator), user.id)
+    cursor.execute(postgres_update_query, record_to_insert)
 
 @db_connector
 def select_all_members(cursor):
     """Returns all members of db table discord_users"""
     cursor.execute('SELECT * FROM discord_users ;')
-    record = cursor.fetchall()
-    print('Print each member')
-    for row in record:
-        print('id:', row[0], )
-        print('Name:', row[1]+'#'+ row[2], '\n')
-    return record
+    return cursor.fetchall()
 
+@db_connector
+def find_member_id(cursor, user_id):
+    """finds and returns member as tuplet. None if not found"""
+    postgres_select_query = """ SELECT * FROM discord_users WHERE userID =(%s)"""
+    user_id_to_select = (user_id,)
+    cursor.execute(postgres_select_query, user_id_to_select)
+    return cursor.fetchall()
