@@ -5,7 +5,7 @@ class BotOperator:
      process data from both discord and database.
 
      """
-    pass
+
 
     def __init__(self):
         pass
@@ -13,31 +13,50 @@ class BotOperator:
 
     def sync_members(self, members):
         """Ensures database data is synced and  up to date with discord members"""
+
         print('Starting sync_members')
-        #Get list of tuples from db with members
-        db_members = db_handler.select_all_members()
-        print('Print each member')
+        # Make set of tuples from db with members
+        db_members = set(db_handler.select_all_members())
 
-        disc_members = [(k, v.name, int(v.discriminator)) for k, v in members.items()]
+        # Make set of tuples from dicitionary
+        disc_members = set([(k, v.name, int(v.discriminator)) for k, v in members.items()])
 
-        # if both are equal
+        # If both are equal then jobs done!
         if disc_members == db_members:
             return
 
 
-        # If size missmatch extra member exists either in db or discord_members
-        if len(disc_members)!=len(db_members):
-            #db can have members that dont exist in discord list, but all
-            pass
+        # Make two sets New users to be inserted, old users to be updated
+
+        # New users ID does not exist in db
+
+        new_user_id_set = list(disc_members)
+        disc_members.difference_update(db_members)
 
 
 
+        #remove all that are equal
+        disc_members.difference_update(db_members)
 
-        print(len(db_members))
-        print(len(disc_members))
+        # insert is users ID who are not allready in db
+        for disc_user in disc_members:
+            id = disc_user[0]
+            new_user = True
+            for db_user in db_members:
+                if db_user[0] == id:
+                    new_user=False
+                    break
+            if new_user:
+                db_handler.insert_user(disc_user)
 
-        print(db_members[0]==disc_members[1])
 
+
+        # Get new updatet set from db and remove equals.
+        disc_members.difference_update(set(db_handler.select_all_members()))
+
+        # Remaining in sets are users who exist in db but need to be updated name or discriminator.
+        for user in disc_members:
+            db_handler.update_user(user)
 
 
         #Return true if db sync was performed or not needed, false if db could not be reached or changed
