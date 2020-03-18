@@ -21,10 +21,10 @@ def db_connector(func):
     
             # Query Function to be called
             query_function = func(cursor, *args, **kwargs)
-
-        except (Exception, psycopg2.Error) as error :
+            connection.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
             print('Error connecting to PSQL: ', error)
-
+            connection.rollback()
         finally:
             # close db connection
             if (connection):
@@ -43,15 +43,21 @@ def test(cursor):
 
 
 @db_connector
+def insert_user(cursor, user):
+    print(user)
+    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s)"""
+    name = str('{'+user.name+'}')
+    record_to_insert = (user.id, name, user.discriminator)
+    cursor.execute(postgres_insert_query, record_to_insert)
+
+
+@db_connector
 def select(cursor):
-    cursor.execute('SELECT * FROM filmer ;')
+    cursor.execute('SELECT * FROM discord_users ;')
     record = cursor.fetchall()
     print("Print each row and it's columns values")
     for row in record:
-        print("id = ", row[0], )
-        print("Title = ", row[1])
-        print("year  = ", row[2])
-        print("Country = ", row[3], )
-        print("genre= ", row[4])
-        print("time  = ", row[6], "\n")
+        print("id:  ", row[0], )
+        print("Name: ", row[1],'#', row[2], '\n')
+
 
