@@ -25,10 +25,7 @@ async def on_ready():
         f'{guild.name}(id: {guild.id})'
     )
 
-    member = discord.utils.find(lambda m: m.id == 166005373356998656, guild.members)
 
-    handler.insert_user(member)
-    handler.select()
 
     # Get Array of members
     member_list = guild.members
@@ -39,7 +36,7 @@ async def on_ready():
         member_dict[x.id] = x
 
     #Send members to boterator to ensure db is synced
-   # boterate.sync_members(member_dict)
+    boterate.sync_members(member_dict)
 
 
     print(f'{client.user} has connected to Discord!')
@@ -54,6 +51,10 @@ client.run(BOT_TOKEN)
 # code snippets
 """
 find spesified member 
-member = discord.utils.find(lambda m: m.id == 166005373356998656, guild.members)
+  member = discord.utils.find(lambda m: m.id == 166005373356998656, guild.members)
+
+
+    handler.insert_user(member)
+    handler.select_all_members()
 
 """

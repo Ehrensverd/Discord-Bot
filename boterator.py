@@ -13,6 +13,13 @@ class BotOperator:
 
     def sync_members(self, members):
         """Ensures database data is synced and  up to date with discord members"""
+
+        #Get list of tuples from db with members
+        db_members = db_handler.select_all_members()
+
+
+
+
         for k, v in members.items():
             print(k, '---->', v.name, '  :   ', v.id, '      ', v.discriminator)
 

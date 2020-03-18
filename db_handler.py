@@ -44,20 +44,20 @@ def test(cursor):
 
 @db_connector
 def insert_user(cursor, user):
-    print(user)
-    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s)"""
-    name = str(''+user.name+'')
+    """Takes a discord user object and inserts it to db table discord_users"""
+    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING;"""
     record_to_insert = (user.id, user.name, user.discriminator)
     cursor.execute(postgres_insert_query, record_to_insert)
 
 
 @db_connector
-def select(cursor):
+def select_all_members(cursor):
+    """Returns all members of db table discord_users"""
     cursor.execute('SELECT * FROM discord_users ;')
     record = cursor.fetchall()
     print('Print each member')
     for row in record:
-        print('id:  ', row[0], )
-        print('Name: ', row[1],'#', row[2], '\n')
-
+        print('id:', row[0], )
+        print('Name:', row[1]+'#'+ row[2], '\n')
+    return record
 
