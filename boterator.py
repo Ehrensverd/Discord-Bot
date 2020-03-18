@@ -13,7 +13,11 @@ class BotOperator:
 
     def sync_members(self, members):
         """Ensures database data is synced and  up to date with discord members"""
-        pass
+        for k, v in members.items():
+            print(k, '---->', v.name, '  :   ', v.id, '      ', v.discriminator)
+
+        #Return true if db sync was performed or not needed, false if db could not be reached or changed
+        return
 
     def insert_user(self, user):
         """Prefors a insert query and tries to write single user to database by id"""

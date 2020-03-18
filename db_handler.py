@@ -46,8 +46,8 @@ def test(cursor):
 def insert_user(cursor, user):
     print(user)
     postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s)"""
-    name = str('{'+user.name+'}')
-    record_to_insert = (user.id, name, user.discriminator)
+    name = str(''+user.name+'')
+    record_to_insert = (user.id, user.name, user.discriminator)
     cursor.execute(postgres_insert_query, record_to_insert)
 
 
@@ -55,9 +55,9 @@ def insert_user(cursor, user):
 def select(cursor):
     cursor.execute('SELECT * FROM discord_users ;')
     record = cursor.fetchall()
-    print("Print each row and it's columns values")
+    print('Print each member')
     for row in record:
-        print("id:  ", row[0], )
-        print("Name: ", row[1],'#', row[2], '\n')
+        print('id:  ', row[0], )
+        print('Name: ', row[1],'#', row[2], '\n')
 
 
