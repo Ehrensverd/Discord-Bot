@@ -17,7 +17,7 @@ def db_connector(func):
 
             cursor = connection.cursor()
             # Print propertiies of connection
-            print(connection.get_dsn_parameters(), '\n')
+            print('DB Connection opend', '\n')
     
             # Query Function to be called
             query_function = func(cursor, *args, **kwargs)
@@ -30,7 +30,7 @@ def db_connector(func):
             if (connection):
                 cursor.close()
                 connection.close()
-                print('PSQL connection closed')
+                print('DB connection closed')
         return query_function
     return wrapper_connection_
 
@@ -48,6 +48,7 @@ def insert_user(cursor, user):
 
     postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING"""
     cursor.execute(postgres_insert_query, user)
+    print('Added user: ', cursor.fetchone() ,' to database')
 
 @db_connector
 def update_user(cursor, user_tuple):
