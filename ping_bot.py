@@ -69,19 +69,17 @@ async def on_user_update(old, updated):
 
 @tasks.loop(seconds=12)
 async def mainloop():
+    print('Starting mainloop')
     await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('time is 22:00')
     await ping_event_ongoing.start()
-
-
 
 
 #make before_loop av main
 @mainloop.before_loop
 async def premain():
-    print('Setting up initial ping ')
-    boterate.initialize_ping()
+    await boterate.first_ping_event()
 
-@tasks.loop(seconds=boterate.get_time_intervall(), count=2)
+@tasks.loop(seconds=boterate.get_time_interval(), count=2)
 async def ping_event_ongoing():
     await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Ping loop started')
 

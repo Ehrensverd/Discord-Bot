@@ -1,5 +1,5 @@
 import random
-
+from datetime import datetime
 import db_handler
 class BotOperator:
     """Bot operator
@@ -100,17 +100,31 @@ class BotOperator:
         set all has_scored false
 
         """
-        pass
+        db_handler.insert_ping_event(self.get_random_time())
+
+
+
     def get_time_interval(self):
-        return query_time_interval
+        time_tuple = db_handler.query_time_interval()
+        start_tuple= eval(time_tuple[0])
+        end_tuple = eval(time_tuple[0])
+        # equation should be end - start + 24 || 60 || 60 for h m s
+        interval ='seconds='+time_tuple
+        return 346
 
     def get_random_time(self):
+        print('Making random time')
         end_hour = random.randrange(7, 22)
-        end_min = random.randint(60)
-        end_sec = random.randint(60)
+        end_min = random.randint(0, 59)
+        end_sec = random.randint(0, 59)
+        print(end_hour, end_min, end_sec)
         return end_hour, end_min, end_sec
 
-    def iniialize_ping(self):
-        # get time now
-        next_ping = self.get_random_time()
-        query_database insert start - end, true, null
+    def first_ping_event(self):
+        time_tuple_now = eval(datetime.now().strftime("(%H, %M, %S)"))
+        print('time is now: ', time_tuple_now)
+        next_ping_event = self.get_random_time()
+        print('Next ping will start ', next_ping_event)
+
+        db_handler.insert_first_ping_event(time_tuple_now, next_ping_event)
+
