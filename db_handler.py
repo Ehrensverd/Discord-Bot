@@ -43,26 +43,26 @@ def test(cursor):
 
 
 @db_connector
-def insert_user(cursor, user):
+def insert_user(cursor, user_tuple):
     """Takes a discord user object and inserts it to db table discord_users"""
-    print('Inserting : ', user, 'into db')
-    postgres_insert_query = """ INSERT INTO discord_users (userID, userName, userNumber) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING"""
-    cursor.execute(postgres_insert_query, user)
-    print('Added user: ', find_member_id(cursor, user[0]), 'to database')
+    print('Inserting : ', user_tuple, 'into db')
+    postgres_insert_query = """ INSERT INTO discord_users (user_id, username, discriminator, user_nick) VALUES (%s,%s,%s,%s) ON CONFLICT DO NOTHING"""
+    cursor.execute(postgres_insert_query, user_tuple)
+    print('Added user: ', user_tuple, 'to database')
+
+
 
 @db_connector
 def update_user(cursor, user_tuple):
     """ Updates name or discriminator of existing user by id"""
-    cursor.execute('SELECT * FROM discord_users where userID=%s', (user_tuple[0],))
+    cursor.execute('SELECT * FROM discord_users where user_id=%s', (user_tuple[0],))
     print('updating user:' , cursor.fetchone())
 
-    record_to_update = (user_tuple[1], user_tuple[2], user_tuple[0])
-
-    postgres_update_query = """ UPDATE discord_users set userName=%s, userNumber=%s where userID=%s"""
-
+    record_to_update = (user_tuple[1], user_tuple[2], user_tuple[3], user_tuple[0])
+    postgres_update_query = """ UPDATE discord_users set username=%s, discriminator=%s, user_nick=%s where user_id=%s"""
     cursor.execute(postgres_update_query, record_to_update)
 
-    cursor.execute('SELECT * FROM discord_users where userID=%s', (user_tuple[0],))
+    cursor.execute('SELECT * FROM discord_users where user_id=%s', (user_tuple[0],))
     print('user updated to:', cursor.fetchone())
 
 
@@ -73,10 +73,12 @@ def select_all_members(cursor):
     cursor.execute('SELECT * FROM discord_users ;')
     return cursor.fetchall()
 
-
+@db_connector
 def find_member_id(cursor, user_id):
     """finds and returns member as tuplet. None if not found"""
-    postgres_select_query = """ SELECT * FROM discord_users WHERE userID =%s"""
+    postgres_select_query = """ SELECT * FROM discord_users WHERE user_id =%s"""
     user_id_to_select = (user_id,)
     cursor.execute(postgres_select_query, user_id_to_select)
     return cursor.fetchone()
+
+

@@ -2,9 +2,10 @@ CREATE DATABASE IF NOT EXISTS inf19;
 
 CREATE TABLE IF NOT EXISTS discord_users(
 
-userID bigint not null unique primary key ,
-userName varchar(50) not null ,
-userNumber varchar(4) not null
+user_id bigint not null unique primary key ,
+username varchar(33) not null ,
+discriminator varchar(4) not null,
+user_nick varchar(33)
 
 );
 

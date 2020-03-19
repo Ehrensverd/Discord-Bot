@@ -12,16 +12,14 @@ class BotOperator:
 
     def sync_members(self, members):
         """Ensures database data is synced and  up to date with discord members"""
-
         print('Starting sync_members')
         # Make set of tuples from db with members
         db_members = set(self.get_members())
 
-        # Make set of tuples from dictionary
+        # Make set of tuples from list
         disc_members = set()
         for x in members:
-            disc_members.add((x.id, x.name, x.discriminator))
-
+            disc_members.add(self.make_member_tuple(x))
 
         # If both are equal then jobs done!
         if disc_members == db_members:
@@ -39,10 +37,10 @@ class BotOperator:
             new_user = True
             for db_user in db_members:
                 if db_user[0] == user_id:
-                    new_user=False
+                    new_user = False
                     break
             if new_user:
-                db_handler.insert_user(disc_user)
+                self.insert_user(disc_user)
                 new_set.add(disc_user)
 
         print('Added', len(new_set), 'users.')
@@ -52,26 +50,39 @@ class BotOperator:
 
         # Remaining  are users who exist in db but need field updated.
         for user in disc_members:
-            self.update_user(user)
+            self.update_member(user)
         print('Updated', len(disc_members), 'users')
         print('DB has been updated.')
-        #Return true if db sync was performed or not needed, false if db could not be reached or changed
-        return
+
 
     def insert_user(self, user):
-        """Prefors a insert query and tries to write single user to database by id"""
-        db_handler.insert_user(user)
+        """Preforms a insert query and tries to write single user to database by id
+        Also checks if user is user object or user tuple.
+        Query expects tuple
+        """
+        if type(user) == tuple:
+            db_handler.insert_user(user)
+        else:
+            db_handler.insert_user(self.make_member_tuple(user))
 
-    def insert_users(self, users):
-        """Similar to insert user, but inserts multiple users."""
-        db_handler.insert_users(users)
-
-
-
-    def update_user(self, user):
+    def update_member(self, member):
         """Changes name and / or discirinator of existing user. does not change ID"""
-        db_handler.update_user(user)
+        if type(member ) == tuple:
+            db_handler.update_user(member)
+        else:
+            db_handler.update_user(self.make_member_tuple(member))
 
     def get_members(self):
         """Preforms a query and retrieves members as a list"""
         return db_handler.select_all_members()
+
+    def has_member(self, member):
+        """Returns true of database has user with matching ID"""
+        return db_handler.find_member_id(member.id) != None
+
+    def make_member_tuple(self, member):
+        """Takes a use/member object and returns a tuple
+        (id, name, discriminator, nick)
+        """
+        return member.id, member.name, member.discriminator, member.nick
+
