@@ -1,3 +1,5 @@
+import random
+
 import db_handler
 class BotOperator:
     """Bot operator
@@ -86,3 +88,29 @@ class BotOperator:
         """
         return member.id, member.name, member.discriminator, member.nick
 
+
+    def add_new_ping_start(self, time):
+        """Stores new ping start -
+        Set old ping event active to false
+        create new row Start = previous row end. End = time
+        set active true. a given ID
+
+        score table:
+        set score table daily score to 0
+        set all has_scored false
+
+        """
+        pass
+    def get_time_interval(self):
+        return query_time_interval
+
+    def get_random_time(self):
+        end_hour = random.randrange(7, 22)
+        end_min = random.randint(60)
+        end_sec = random.randint(60)
+        return end_hour, end_min, end_sec
+
+    def iniialize_ping(self):
+        # get time now
+        next_ping = self.get_random_time()
+        query_database insert start - end, true, null

@@ -82,3 +82,17 @@ def find_member_id(cursor, user_id):
     return cursor.fetchone()
 
 
+@db_connector
+def insert_ping_event(cursor, time):
+    pass
+
+
+@db_connector
+def insert_first_ping_event(cursor, start, end):
+    pass
+
+@db_connector
+def get_current_interval(cursor):
+
+    return
+

@@ -2,8 +2,8 @@
 import db_handler
 import boterator
 import os
-import discord
-from discord.ext import commands
+import random
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,8 +20,7 @@ boterate = boterator.BotOperator()
 
 @bot.event
 async def on_ready():
-
-    guild = discord.utils.find(lambda g: g.name == 'Reverends Sanctuary', bot.guilds)
+    guild = bot.get_guild(int(GUILD_ID))
     print(
         f'{bot.user} is connected to the following guild:\n'
         f'{guild.name}(id: {guild.id})'
@@ -30,6 +29,7 @@ async def on_ready():
     #Send members to boterator to ensure db is synced
     boterate.sync_members(guild.members)
     print(f'{bot.user} has connected to Discord!')
+    mainloop.start()
 
 
 @bot.event
@@ -55,13 +55,60 @@ async def on_member_update(old, updated):
 async def on_user_update(old, updated):
     """ Is called when user changes avatar,username or discriminator"""
     print('Updating user: ', old , ' to : ', updated)
-    guild = discord.utils.find(lambda g: g.name == 'Reverends Sanctuary', bot.guilds)
-    member = discord.utils.find(lambda m: m.id == updated.id, guild.members)
+    member = bot.get_guild(int(GUILD_ID)).get_member(updated.id)
+
     if old.name != updated.name or old.discriminator != updated.discriminator:
         boterate.update_member(member)
 
 
 
+
+#Ping event
+
+
+
+@tasks.loop(seconds=12)
+async def mainloop():
+    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('time is 22:00')
+    await ping_event_ongoing.start()
+
+
+
+
+#make before_loop av main
+@mainloop.before_loop
+async def premain():
+    print('Setting up initial ping ')
+    boterate.initialize_ping()
+
+@tasks.loop(seconds=boterate.get_time_intervall(), count=2)
+async def ping_event_ongoing():
+    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Ping loop started')
+
+
+@ping_event_ongoing.after_loop
+async def ping_start():
+    """
+    Ping!
+    Start of ping event.
+    calculates next ping
+    which will end this ping event and start the next one
+    Writes next ping to db
+    id  | start    |   end
+    1   |   12:24  |   15:23   interval is 24 hous plus 2h 59m - pingers next loop time.
+    2   | 15:23    |    21:14
+
+    Makes this ping active (True) - previous False
+
+
+
+    next ping event.
+    new pings score new event in db
+    """
+
+    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('!PING')
+    next_day_ping = random.randrange(7, 22)
+    boterate.add_new_ping_start(next_day_ping)
 
 
 #Commands:
