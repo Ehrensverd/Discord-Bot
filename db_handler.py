@@ -17,7 +17,7 @@ def db_connector(func):
 
             cursor = connection.cursor()
             # Print propertiies of connection
-            print('DB Connection opend', '\n')
+            print('\n\nDB Connection opend', '\n')
     
             # Query Function to be called
             query_function = func(cursor, *args, **kwargs)
@@ -30,7 +30,7 @@ def db_connector(func):
             if (connection):
                 cursor.close()
                 connection.close()
-                print('DB connection closed')
+                print('DB connection closed\n\n')
         return query_function
     return wrapper_connection_
 
@@ -89,16 +89,15 @@ def insert_ping_event(cursor, end_time):
     cursor.execute( """ SELECT end_time FROM ping_events WHERE active=TRUE""")
     start = cursor.fetchone()
 
+
     print('Setting previous ping_event active to false')
     cursor.execute( """ UPDATE ping_events set active=FALSE where active=TRUE""")
-    print('Setting previous ping_event active to false')
 
-    print('Inserting first ping event. Start: ', start, 'next Ping event will start tomorow at: ', end_time)
-
+    print('Inserting new ping event. Start: ', start, 'next Ping event will start tomorow at: ', end_time)
     postgres_insert_query = """ INSERT INTO ping_events (start_time, end_time, active) VALUES (%s,%s ,TRUE) ON CONFLICT DO NOTHING"""
     times = start, end_time
     cursor.execute(postgres_insert_query, times)
-    print('Ping event inserted. ')
+    print('Ping event inserted. \n\n')
 
 
 
@@ -116,14 +115,18 @@ def insert_first_ping_event(cursor, start, end):
 
 @db_connector
 def query_time_interval(cursor):
+    print('Interval queried')
     cursor.execute("""SELECT start_time, end_time FROM ping_events WHERE active=TRUE""")
-    return cursor.fetchone()
+    record = cursor.fetchone()
+    print('from db ', record)
+    return record
+
 
 @db_connector
 def query_has_scored(user):
-    return answer
+   pass
 
 
 @db_connector
 def insert_scored(user):
-    return answer
+    pass

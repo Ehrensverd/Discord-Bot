@@ -5,6 +5,7 @@ import os
 import random
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
+import looper
 
 load_dotenv()
 BOT_TOKEN = os.getenv('DISCORD_TOKEN')
@@ -67,54 +68,23 @@ async def on_user_update(old, updated):
 
 
 
-@tasks.loop(seconds=12)
+@tasks.loop(seconds=24)
 async def mainloop():
-    print('Starting mainloop')
     await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('time is 22:00')
-    await ping_event_ongoing.start()
+    await bot.wait_until_ready()
 
+    loop = looper.Looper(bot)
 
-#make before_loop av main
-@mainloop.before_loop
-async def premain():
-    await boterate.first_ping_event()
+    print('inn main loop, changing interval')
+    loop.ping_event_ongoing.change_interval(seconds=boterate.get_time_interval())
+    print('inn main loop, starting ping loop')
+    loop.ping_event_ongoing.start()
 
-@tasks.loop(seconds=boterate.get_time_interval(), count=2)
-async def ping_event_ongoing():
-    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Ping loop started')
+    print('Starting mainloop')
 
-
-@ping_event_ongoing.after_loop
-async def ping_start():
-    """
-    Ping!
-    Start of ping event.
-    calculates next ping
-    which will end this ping event and start the next one
-    Writes next ping to db
-    id  | start    |   end
-    1   |   12:24  |   15:23   interval is 24 hous plus 2h 59m - pingers next loop time.
-    2   | 15:23    |    21:14
-
-    Makes this ping active (True) - previous False
-
-
-
-    next ping event.
-    new pings score new event in db
-    """
-
-    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('!PING')
 
 
 #Commands:
-
-
-@bot.command()
-async def pong(ctx):
-    #get time and scored if player has not scored
-    member = ctx.get_member
-    await boterate.check_if_scored(member)
 
 
 @bot.command()
@@ -124,3 +94,17 @@ async def ping(ctx):
 
 bot.run(BOT_TOKEN)
 
+"""
+
+
+@bot.command()
+async def pong(ctx):
+    #get time and scored if player has not scored
+    member = ctx.get_member
+    await boterate.check_if_scored(member)
+    
+    @mainloop.before_loop
+async def premain():
+    boterate.first_ping_event()
+    
+    """

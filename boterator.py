@@ -1,6 +1,8 @@
 import random
 from datetime import datetime
 import db_handler
+from discord.ext import commands, tasks
+
 class BotOperator:
     """Bot operator
      important fucntions that read, insert to database as well as
@@ -89,7 +91,7 @@ class BotOperator:
         return member.id, member.name, member.discriminator, member.nick
 
 
-    def add_new_ping_start(self, time):
+    def add_new_ping_start(self):
         """Stores new ping start -
         Set old ping event active to false
         create new row Start = previous row end. End = time
@@ -106,11 +108,13 @@ class BotOperator:
 
     def get_time_interval(self):
         time_tuple = db_handler.query_time_interval()
-        start_tuple= eval(time_tuple[0])
-        end_tuple = eval(time_tuple[0])
+        start_tuple = eval(time_tuple[0])
+        end_tuple = eval(time_tuple[1])
         # equation should be end - start + 24 || 60 || 60 for h m s
-        interval ='seconds='+time_tuple
-        return 346
+        seconds = end_tuple[0] - start_tuple[0] + 24
+        print('                                hours untill for next interval:' , seconds)
+        # interval ='seconds='+time_tuple
+        return seconds
 
     def get_random_time(self):
         print('Making random time')
@@ -121,10 +125,26 @@ class BotOperator:
         return end_hour, end_min, end_sec
 
     def first_ping_event(self):
-        time_tuple_now = eval(datetime.now().strftime("(%H, %M, %S)"))
+        db_handler.insert_first_ping_event(datetime.now().strftime("(%H, %M, %S)"), str(self.get_random_time()))
+
+
+
+
+
+
+
+"""
+  print('first ping event starting')
+        time_tuple_now = datetime.now().strftime("(%H, %M, %S)")
         print('time is now: ', time_tuple_now)
         next_ping_event = self.get_random_time()
         print('Next ping will start ', next_ping_event)
+        
+        
+        #make before_loop av main
+@mainloop.before_loop
+async def premain():
+    boterate.first_ping_event()
 
-        db_handler.insert_first_ping_event(time_tuple_now, next_ping_event)
 
+"""
