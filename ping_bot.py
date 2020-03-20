@@ -105,12 +105,16 @@ async def ping_start():
     """
 
     await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('!PING')
-    next_day_ping = random.randrange(7, 22)
-    boterate.add_new_ping_start(next_day_ping)
 
 
 #Commands:
 
+
+@bot.command()
+async def pong(ctx):
+    #get time and scored if player has not scored
+    member = ctx.get_member
+    await boterate.check_if_scored(member)
 
 
 @bot.command()

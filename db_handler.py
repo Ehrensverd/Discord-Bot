@@ -119,4 +119,11 @@ def query_time_interval(cursor):
     cursor.execute("""SELECT start_time, end_time FROM ping_events WHERE active=TRUE""")
     return cursor.fetchone()
 
+@db_connector
+def query_has_scored(user):
+    return answer
 
+
+@db_connector
+def insert_scored(user):
+    return answer
