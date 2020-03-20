@@ -53,16 +53,16 @@ def insert_user(cursor, user_tuple):
 
 
 @db_connector
-def update_user(cursor, user_tuple):
-    """ Updates name or discriminator of existing user by id"""
-    cursor.execute('SELECT * FROM discord_users where user_id=%s', (user_tuple[0],))
+def update_member(cursor, member_tuple):
+    """ Updates name, nick or discriminator of existing member by id"""
+    cursor.execute('SELECT * FROM discord_users where user_id=%s', (member_tuple[0],))
     print('updating user:' , cursor.fetchone())
 
-    record_to_update = (user_tuple[1], user_tuple[2], user_tuple[3], user_tuple[0])
+    record_to_update = (member_tuple[1], member_tuple[2], member_tuple[3], member_tuple[0])
     postgres_update_query = """ UPDATE discord_users set username=%s, discriminator=%s, user_nick=%s where user_id=%s"""
     cursor.execute(postgres_update_query, record_to_update)
 
-    cursor.execute('SELECT * FROM discord_users where user_id=%s', (user_tuple[0],))
+    cursor.execute('SELECT * FROM discord_users where user_id=%s', (member_tuple[0],))
     print('user updated to:', cursor.fetchone())
 
 
@@ -89,28 +89,44 @@ def insert_ping_event(cursor, timestamp):
 
     print('Setting previous ping_event active to false')
     cursor.execute( """ UPDATE ping_events set active=FALSE where active=TRUE""")
+
     print('Setting ping to be scored to active to true')
     cursor.execute(""" UPDATE ping_events set active=TRUE where ping_id IN( SELECT max(ping_id) FROM ping_events);""")
 
     print('Inserting next ping event with timestamp: ', timestamp)
-    postgres_insert_query = """ INSERT INTO ping_events (ping_time, active) VALUES (%s,TRUE) ON CONFLICT DO NOTHING"""
+    postgres_insert_query = """ INSERT INTO ping_events (ping_time, active) VALUES (%s,FALSE) ON CONFLICT DO NOTHING"""
 
     cursor.execute(postgres_insert_query, (timestamp,))
     print('Ping event inserted.')
 
 
 @db_connector
-def query_timestamp(cursor):
-    print('Interval queried')
+def query_timestamp_next_ping(cursor):
+    print('Next ping queried')
     cursor.execute("""SELECT ping_time FROM ping_events WHERE ping_id IN(SELECT max(ping_id) FROM ping_events)""")
+    record = cursor.fetchone()
+    print('from db ', record)
+    return record[0]
+
+@db_connector
+def query_timestamp_ongoing_ping(cursor):
+    print('Ongoing ping queried')
+    cursor.execute("""SELECT ping_time FROM ping_events WHERE active=TRUE""")
     record = cursor.fetchone()
     print('from db ', record)
     return record[0]
 
 
 @db_connector
-def query_has_scored(user):
-   pass
+def query_has_scored(cursor, user):
+    print('Query if member har scored', user)
+    postgres_select_query = """SELECT has_scored FROM score WHERE score.user_id=%s """
+
+    cursor.execute(postgres_select_query, (user,))
+
+    record = cursor.fetchone()
+    print('from db ', record)
+    return record[0]
 
 
 @db_connector

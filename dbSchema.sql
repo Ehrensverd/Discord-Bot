@@ -16,11 +16,12 @@ GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
 GRANT USAGE, SELECT ON SEQUENCE ping_events_ping_id_seq TO testbot;
 
 CREATE TABLE IF NOT EXISTS score(
-
 user_id bigint primary key references discord_users not null,
 total integer default 0,
-has_scored bool default false not null,
+has_scored bool default FALSE,
 daily_score integer default 0,
+
+
 aether_wins smallint default 0,
 aether_attempts smallint default 0,
 aether_burns smallint default 0,

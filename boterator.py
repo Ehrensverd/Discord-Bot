@@ -72,9 +72,9 @@ class BotOperator:
     def update_member(self, member):
         """Changes name and / or discirinator of existing user. does not change ID"""
         if type(member) == tuple:
-            db_handler.update_user(member)
+            db_handler.update_member(member)
         else:
-            db_handler.update_user(self.make_member_tuple(member))
+            db_handler.update_member(self.make_member_tuple(member))
 
     def get_members(self):
         """Preforms a query and retrieves members as a list"""
@@ -97,8 +97,13 @@ class BotOperator:
 
     def get_ping_timestamp(self):
         """Gets newest ping timestamp from database.  """
-        return db_handler.query_timestamp()
+        return db_handler.query_timestamp_next_ping()
 
     def initiate_ping(self):
         """Ensure players can score again. Sets has_scored to false, updates daily score"""
         pass
+    def update_member_score(self, member):
+        db_handler.insert_scored()
+
+    def has_scored(self, member):
+        return db_handler.query_has_scored(member)

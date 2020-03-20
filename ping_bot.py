@@ -3,6 +3,7 @@ import db_handler
 import boterator
 import os
 import random
+from datetime import datetime, timedelta
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import looper
@@ -69,6 +70,18 @@ async def on_user_update(old, updated):
 
 
 #Commands:
+@bot.command()
+async def pong(ctx):
+    #get time and scored if player has not scored
+
+    time_since_pong = datetime.now() - handler.query_timestamp_ongoing_ping()
+    print(time_since_pong)
+    await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send(time_since_pong)
+    print(boterate.has_scored(ctx.author.id))
+
+    if not boterate.has_scored(ctx.author.id):
+        boterate.update_member_score()
+
 
 
 @bot.command()
@@ -81,11 +94,7 @@ bot.run(BOT_TOKEN)
 """
 
 
-@bot.command()
-async def pong(ctx):
-    #get time and scored if player has not scored
-    member = ctx.get_member
-    await boterate.check_if_scored(member)
+
     
     @mainloop.before_loop
 async def premain():

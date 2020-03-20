@@ -10,7 +10,7 @@ import time
 
 def make_random_time():
     # datetime.now().replace(hour=randint(7, 22), minute=randint(0, 59), second=randint(0, 59)) + timedelta(days=1)
-    timestamp = datetime.now().replace(second=randint(0, 59)) + timedelta(minutes=1)
+    timestamp = datetime.now() + timedelta(seconds=randint(6, 30))
     return timestamp
 
 
