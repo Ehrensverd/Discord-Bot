@@ -92,16 +92,6 @@ class BotOperator:
 
 
     def add_new_ping_start(self):
-        """Stores new ping start -
-        Set old ping event active to false
-        create new row Start = previous row end. End = time
-        set active true. a given ID
-
-        score table:
-        set score table daily score to 0
-        set all has_scored false
-
-        """
         db_handler.insert_ping_event(self.get_random_time())
 
 
@@ -112,7 +102,7 @@ class BotOperator:
         end_tuple = eval(time_tuple[1])
         # equation should be end - start + 24 || 60 || 60 for h m s
         seconds = end_tuple[0] - start_tuple[0] + 24
-        print('                                hours untill for next interval:' , seconds)
+
         # interval ='seconds='+time_tuple
         return seconds
 

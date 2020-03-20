@@ -17,7 +17,7 @@ def db_connector(func):
 
             cursor = connection.cursor()
             # Print propertiies of connection
-            print('\n\nDB Connection opend', '\n')
+            #print('\nDB Connection opend')
     
             # Query Function to be called
             query_function = func(cursor, *args, **kwargs)
@@ -30,7 +30,7 @@ def db_connector(func):
             if (connection):
                 cursor.close()
                 connection.close()
-                print('DB connection closed\n\n')
+                #print('DB connection closed\n')
         return query_function
     return wrapper_connection_
 
@@ -86,6 +86,8 @@ def find_member_id(cursor, user_id):
 def insert_ping_event(cursor, end_time):
     """Inserts an  ping event."""
 
+
+    #Getting starttime
     cursor.execute( """ SELECT end_time FROM ping_events WHERE active=TRUE""")
     start = cursor.fetchone()
 
@@ -97,7 +99,7 @@ def insert_ping_event(cursor, end_time):
     postgres_insert_query = """ INSERT INTO ping_events (start_time, end_time, active) VALUES (%s,%s ,TRUE) ON CONFLICT DO NOTHING"""
     times = start, end_time
     cursor.execute(postgres_insert_query, times)
-    print('Ping event inserted. \n\n')
+    print('Ping event inserted.')
 
 
 
