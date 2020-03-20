@@ -83,45 +83,29 @@ def find_member_id(cursor, user_id):
 
 
 @db_connector
-def insert_ping_event(cursor, end_time):
+def insert_ping_event(cursor, timestamp):
     """Inserts an  ping event."""
-
-
     #Getting starttime
-    cursor.execute( """ SELECT end_time FROM ping_events WHERE active=TRUE""")
-    start = cursor.fetchone()
-
 
     print('Setting previous ping_event active to false')
     cursor.execute( """ UPDATE ping_events set active=FALSE where active=TRUE""")
+    print('Setting ping to be scored to active to true')
+    cursor.execute(""" UPDATE ping_events set active=TRUE where ping_id IN( SELECT max(ping_id) FROM ping_events);""")
 
-    print('Inserting new ping event. Start: ', start, 'next Ping event will start tomorow at: ', end_time)
-    postgres_insert_query = """ INSERT INTO ping_events (start_time, end_time, active) VALUES (%s,%s ,TRUE) ON CONFLICT DO NOTHING"""
-    times = start, end_time
-    cursor.execute(postgres_insert_query, times)
+    print('Inserting next ping event with timestamp: ', timestamp)
+    postgres_insert_query = """ INSERT INTO ping_events (ping_time, active) VALUES (%s,TRUE) ON CONFLICT DO NOTHING"""
+
+    cursor.execute(postgres_insert_query, (timestamp,))
     print('Ping event inserted.')
 
 
-
-
-
 @db_connector
-def insert_first_ping_event(cursor, start, end):
-    """Inserts an initial ping event."""
-    print('Inserting first ping event. Start: ', start, 'next Ping event will start tomorow at: ' , end)
-    postgres_insert_query = """ INSERT INTO ping_events (start_time, end_time, active) VALUES (%s,%s ,TRUE) ON CONFLICT DO NOTHING"""
-    times = str(start), str(end)
-    cursor.execute(postgres_insert_query, times )
-    print('Ping event inserted. ')
-
-
-@db_connector
-def query_time_interval(cursor):
+def query_timestamp(cursor):
     print('Interval queried')
-    cursor.execute("""SELECT start_time, end_time FROM ping_events WHERE active=TRUE""")
+    cursor.execute("""SELECT ping_time FROM ping_events WHERE ping_id IN(SELECT max(ping_id) FROM ping_events)""")
     record = cursor.fetchone()
     print('from db ', record)
-    return record
+    return record[0]
 
 
 @db_connector

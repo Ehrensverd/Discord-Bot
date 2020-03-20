@@ -13,7 +13,6 @@ user_nick varchar(33)
 GRANT SELECT, INSERT, UPDATE ON discord_users TO testbot;
 GRANT SELECT, INSERT, UPDATE ON score TO testbot;
 GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
-GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
 GRANT USAGE, SELECT ON SEQUENCE ping_events_ping_id_seq TO testbot;
 
 CREATE TABLE IF NOT EXISTS score(
@@ -30,12 +29,17 @@ aether_gains integer default 0
 );
 
 
+
+
+
 CREATE TABLE IF NOT EXISTS ping_events(
 
 ping_id serial primary key,
-start_time varchar(12) not null ,
-end_time varchar(12) not null,
+ping_time timestamptz not null,
 active bool not null,
 first_user bigint references discord_users
 
 );
+
+GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
+GRANT USAGE, SELECT ON SEQUENCE ping_events_ping_id_seq TO testbot;

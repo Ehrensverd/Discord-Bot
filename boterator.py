@@ -71,7 +71,7 @@ class BotOperator:
 
     def update_member(self, member):
         """Changes name and / or discirinator of existing user. does not change ID"""
-        if type(member ) == tuple:
+        if type(member) == tuple:
             db_handler.update_user(member)
         else:
             db_handler.update_user(self.make_member_tuple(member))
@@ -91,50 +91,14 @@ class BotOperator:
         return member.id, member.name, member.discriminator, member.nick
 
 
-    def add_new_ping_start(self):
-        db_handler.insert_ping_event(self.get_random_time())
+    def set_next_ping_timestamp(self, timestamp):
+        """Inserts a new timestamp to table and updates active"""
+        db_handler.insert_ping_event(timestamp)
 
+    def get_ping_timestamp(self):
+        """Gets newest ping timestamp from database.  """
+        return db_handler.query_timestamp()
 
-
-    def get_time_interval(self):
-        time_tuple = db_handler.query_time_interval()
-        start_tuple = eval(time_tuple[0])
-        end_tuple = eval(time_tuple[1])
-        # equation should be end - start + 24 || 60 || 60 for h m s
-        seconds = end_tuple[0] - start_tuple[0] + 24
-
-        # interval ='seconds='+time_tuple
-        return seconds
-
-    def get_random_time(self):
-        print('Making random time')
-        end_hour = random.randrange(7, 22)
-        end_min = random.randint(0, 59)
-        end_sec = random.randint(0, 59)
-        print(end_hour, end_min, end_sec)
-        return end_hour, end_min, end_sec
-
-    def first_ping_event(self):
-        db_handler.insert_first_ping_event(datetime.now().strftime("(%H, %M, %S)"), str(self.get_random_time()))
-
-
-
-
-
-
-
-"""
-  print('first ping event starting')
-        time_tuple_now = datetime.now().strftime("(%H, %M, %S)")
-        print('time is now: ', time_tuple_now)
-        next_ping_event = self.get_random_time()
-        print('Next ping will start ', next_ping_event)
-        
-        
-        #make before_loop av main
-@mainloop.before_loop
-async def premain():
-    boterate.first_ping_event()
-
-
-"""
+    def initiate_ping(self):
+        """Ensure players can score again. Sets has_scored to false, updates daily score"""
+        pass

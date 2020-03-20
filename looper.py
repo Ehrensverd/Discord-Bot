@@ -2,7 +2,17 @@ from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import os
 import boterator
+import datetime
+from datetime import datetime, timedelta
+from random import randint
 import time
+
+
+def make_random_time():
+    # datetime.now().replace(hour=randint(7, 22), minute=randint(0, 59), second=randint(0, 59)) + timedelta(days=1)
+    timestamp = datetime.now().replace(second=randint(0, 59)) + timedelta(minutes=1)
+    return timestamp
+
 
 class Looper:
     load_dotenv()
@@ -14,28 +24,22 @@ class Looper:
     def __init__(self, bot):
         self.bot = bot
 
-    @tasks.loop()
-    async def ping_event_ongoing(self):
-        # await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('!PING')
-        print('\nPING!\nPing Loop starting, last loop lasted:  ',  round((time.time() - self.sec_elapsed), 2))
+    @tasks.loop(seconds=5)
+    async def ping_event_handler(self):
+        """Loop that checks whether its time to activate next ping       """
 
-        print('inserting this new ping event and finding start of next')
-        self.boterate.add_new_ping_start()
+        nextping = self.boterate.get_ping_timestamp()
+        if nextping is None:
+            self.boterate.set_next_ping_timestamp(datetime.now())
+            self.boterate.initiate_ping()
+            self.boterate.set_next_ping_timestamp(make_random_time())
+            await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
+            return
 
-        seconds = self.boterate.get_time_interval()
-        print('Next interval is: ', seconds)
-        print('Changing interval of next loop\n')
-        self.ping_event_ongoing.change_interval(seconds=seconds)
-        self.sec_elapsed = time.time()
-
-
-
-
-"""
-
-@ping_event_ongoing.after_loop
-async def change_time():
-    ping_event_ongoing.stop()
-
-
-"""
+        print(datetime.now())
+        print(nextping)
+        if nextping < datetime.now():
+            self.boterate.initiate_ping()
+            self.boterate.set_next_ping_timestamp(make_random_time())
+            await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
+        return

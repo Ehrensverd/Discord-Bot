@@ -26,10 +26,11 @@ async def on_ready():
         f'{bot.user} is connected to the following guild:\n'
         f'{guild.name}(id: {guild.id})'
     )
+
     #Send members to boterator to ensure db is synced
     boterate.sync_members(guild.members)
     print(f'{bot.user} has connected to Discord!')
-    loop.ping_event_ongoing.start()
+    loop.ping_event_handler.start()
 
 
 @bot.event
@@ -64,24 +65,6 @@ async def on_user_update(old, updated):
 
 
 #Ping event
-
-
-
-@tasks.loop(seconds=24)
-async def mainloop():
-    print('\n\nStarting mainloop')
-    #await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('time is 22:00')
-    #await bot.wait_until_ready()
-
-
-
-    #print('inn main loop, changing interval')
-    #loop.ping_event_ongoing.change_interval(seconds=boterate.get_time_interval())
-    print('inn main loop, between change and start')
-    loop.ping_event_ongoing.start()
-    print('End of mainloop')
-
-
 
 
 
