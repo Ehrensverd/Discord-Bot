@@ -99,10 +99,13 @@ class BotOperator:
         """Gets newest ping timestamp from database.  """
         return db_handler.query_timestamp_next_ping()
 
+    def get_ongoing_ping_timestamp(self):
+        return db_handler.query_timestamp_ongoing_ping()
+
     def initiate_ping(self):
         """Ensure players can score again. Sets has_scored to false, updates daily score"""
         pass
-    def update_member_score(self, member):
+    def update_member_score(self, member, time_since_pon):
         db_handler.insert_scored()
 
     def has_scored(self, member):
