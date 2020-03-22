@@ -49,7 +49,10 @@ def insert_user(cursor, user_tuple):
     postgres_insert_query = """ INSERT INTO discord_users (user_id, username, discriminator, user_nick) VALUES (%s,%s,%s,%s) ON CONFLICT DO NOTHING"""
     cursor.execute(postgres_insert_query, user_tuple)
     print('Added user: ', user_tuple, 'to database')
-
+    print('Inserting : ', user_tuple, 'into db')
+    postgres_insert_query = """ INSERT INTO score (score.user_id) VALUES (%s) ON CONFLICT DO NOTHING"""
+    cursor.execute(postgres_insert_query, user_tuple[0])
+    print('Added user: ', user_tuple, 'to database')
 
 
 @db_connector
