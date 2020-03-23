@@ -45,6 +45,7 @@ class BotOperator:
                     break
             if new_user:
                 self.insert_user(disc_user)
+
                 new_set.add(disc_user)
 
         print('Added', len(new_set), 'users.')

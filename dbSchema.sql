@@ -10,10 +10,7 @@ user_nick varchar(33)
 );
 
 
-GRANT SELECT, INSERT, UPDATE ON discord_users TO testbot;
-GRANT SELECT, INSERT, UPDATE ON score TO testbot;
-GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
-GRANT USAGE, SELECT ON SEQUENCE ping_events_ping_id_seq TO testbot;
+
 
 CREATE TABLE IF NOT EXISTS score(
 user_id bigint primary key references discord_users not null,
@@ -42,5 +39,7 @@ first_user bigint references discord_users
 
 );
 
+GRANT SELECT, INSERT, UPDATE ON discord_users TO testbot;
+GRANT SELECT, INSERT, UPDATE ON score TO testbot;
 GRANT SELECT, INSERT, UPDATE ON ping_events TO testbot;
 GRANT USAGE, SELECT ON SEQUENCE ping_events_ping_id_seq TO testbot;
