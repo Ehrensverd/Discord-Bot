@@ -108,7 +108,7 @@ def query_timestamp_next_ping(cursor):
     cursor.execute("""SELECT ping_time FROM ping_events WHERE ping_id IN(SELECT max(ping_id) FROM ping_events)""")
     record = cursor.fetchone()
     print('from db ', record)
-    return record[0]
+    return record
 
 @db_connector
 def query_timestamp_ongoing_ping(cursor):
@@ -116,7 +116,7 @@ def query_timestamp_ongoing_ping(cursor):
     cursor.execute("""SELECT ping_time FROM ping_events WHERE active=TRUE""")
     record = cursor.fetchone()
     print('from db ', record)
-    return record[0]
+    return record
 
 
 @db_connector

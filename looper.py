@@ -2,7 +2,7 @@ from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import os
 import boterator
-import datetime
+
 from datetime import datetime, timedelta
 from random import randint
 import time
@@ -10,7 +10,8 @@ import time
 
 def make_random_time():
     # datetime.now().replace(hour=randint(7, 22), minute=randint(0, 59), second=randint(0, 59)) + timedelta(days=1)
-    timestamp = datetime.now() + timedelta(seconds=randint(6, 30))
+    timestamp = datetime.now().astimezone() + timedelta(seconds=randint(6, 30))
+    print('Random time stamp made:', timestamp)
     return timestamp
 
 
@@ -36,9 +37,10 @@ class Looper:
             await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
             return
 
-        print(datetime.now())
+        nextping = nextping[0]
+        print(datetime.now().astimezone())
         print(nextping)
-        if nextping < datetime.now():
+        if nextping < datetime.now().astimezone():
             self.boterate.initiate_ping()
             self.boterate.set_next_ping_timestamp(make_random_time())
             await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
