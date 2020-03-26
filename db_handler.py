@@ -61,10 +61,10 @@ def update_member(cursor, member_tuple):
     print('updating user:' , cursor.fetchone())
 
     record_to_update = (member_tuple[1], member_tuple[2], member_tuple[3], member_tuple[0])
-    postgres_update_query = """ UPDATE discord_users set username=%s, discriminator=%s, user_nick=%s where user_id=%s"""
+    postgres_update_query = """ UPDATE discord_users set username = %s, discriminator = %s, user_nick = %s where user_id=%s"""
     cursor.execute(postgres_update_query, record_to_update)
 
-    cursor.execute('SELECT * FROM discord_users where user_id=%s', (member_tuple[0],))
+    cursor.execute(""" SELECT * FROM discord_users where user_id=%s""", (member_tuple[0],))
     print('user updated to:', cursor.fetchone())
 
 
@@ -132,5 +132,8 @@ def query_has_scored(cursor, user):
 
 
 @db_connector
-def insert_scored(user):
-    pass
+def insert_score(cursor, delta, user):
+    query_string = """ UPDATE score set has_scored=True, daily_score=(20*(%s)+10000), total=total+(20*(%s)+10000) where score.user_id=%s """
+    cursor.execute(query_string, (delta, delta, user))
+    cursor.execute(""" SELECT total FROM score where score.user_id=%s""", (user))
+    return cursor.fetchone()

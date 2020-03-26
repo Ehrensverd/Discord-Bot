@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import looper
-
+import ping_game
 
 load_dotenv()
 BOT_TOKEN = os.getenv('DISCORD_TOKEN')
@@ -65,17 +65,58 @@ async def on_user_update(old, updated):
 @bot.command()
 async def pong(ctx):
     """ Chat command used to score after 'ping!' is issued by bot. the faster the more points"""
-
-    time_since_pong = datetime.now() - boterate.get_ongoing_ping_timestamp()
-    print(time_since_pong)
-
+    ad =datetime.now().astimezone() + timedelta
+    bd = boterate.get_ongoing_ping_timestamp()[0]
+    delta = datetime.now().astimezone() - boterate.get_ongoing_ping_timestamp()[0]
+    print(ad)
+    print(bd)
+    print(delta)
     if not boterate.has_scored(ctx.author.id):
-        points = boterate.update_member_score(ctx.author.id, time_since_pong)
-        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Scored points: ', points, 'You ponged withing ',time_since_pong, 'seconds.')
+        points = ping_game.score_ping(ctx.author.id, delta)
+        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Scored points: ', points[0], 'You ponged withing ',delta, 'seconds.')
+
+"""
+
+!ping will have bot say pong
+
+!pong for scoring bot ping
+
+!score displays users current score
+
+!top displays top3 players
+
+!help displays all commands
+
+!prize  displays prizes
+
+!rules displays rules. score once per ping. duration game 2 weeks. 
+
+
+
+When time allows it:
+
+!penta_ping
+
+!p1ng
+!p2ng
+!p3ng
+!p4ng
+!p5ng
+
+!aether_summon
+
+
+"""
+
+
+
 
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong!')
+
+
+
 
 
 if __name__ == "__main__":
