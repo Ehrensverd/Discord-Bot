@@ -99,7 +99,7 @@ def insert_ping_event(cursor, timestamp):
     postgres_insert_query = """ INSERT INTO ping_events (ping_time, active) VALUES (%s,FALSE) ON CONFLICT DO NOTHING"""
 
     print('Setting has scored to false for all users:')
-    cursor.execute(""" UPDATE score set has_scored=FALSE where has_scored=TRUE;""")
+    cursor.execute(""" UPDATE score set has_scored=default, daily_score=default;""")
 
     cursor.execute(postgres_insert_query, (timestamp,))
     print('Ping event inserted.')
@@ -139,5 +139,7 @@ def insert_score(cursor, delta, user):
     print("Inserting score", delta, " to users id ", user)
     query_string = """ UPDATE score set has_scored=True, daily_score=(%s), total=total+(%s) where score.user_id=%s """
     cursor.execute(query_string, (int(delta), int(delta), user))
-
-
+    cursor.connection.commit()
+    postgres_select_query = """SELECT total, daily_score FROM score WHERE score.user_id=%s """
+    cursor.execute(postgres_select_query, (user,))
+    return tuple(str(p) for p in cursor.fetchone())

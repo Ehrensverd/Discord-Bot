@@ -73,7 +73,7 @@ async def pong(ctx):
     print(delta)
     if not boterate.has_scored(ctx.author.id):
         points = ping_game.score_ping(ctx.author.id, delta)
-        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send(('Scored points: ' + str(points) + 'You ponged withing ' + str(delta) + 'seconds.'))
+        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send(('Scored points: ' + str(points[1]) + '. You ponged withing ' + str(delta) + 'seconds. Total score is: ' + points[0] ))
 
 """
 

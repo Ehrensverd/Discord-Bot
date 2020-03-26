@@ -38,17 +38,15 @@ def score_ping(member, delta):
     y = -2/900 * (x-10000) + 200        if x < 100000 sec
     """
     if delta < 10:
-        db_handler.insert_score((-20) * delta + 1000, member)
-        return int((-20) * delta + 1000)
+        return db_handler.insert_score((-20) * delta + 1000, member)
     if delta < 100:
-        db_handler.insert_score((-20 / 9) * (delta-10) + 800, member)
-        return int((-20 / 9) * (delta-10) + 800)
+        return db_handler.insert_score((-20 / 9) * (delta-10) + 800, member)
     if delta < 1000:
-        db_handler.insert_score((-2/9) * (delta-100) + 600, member)
+        return db_handler.insert_score((-2/9) * (delta-100) + 600, member)
     if delta < 10000:
-        db_handler.insert_score((-2/90) * (delta-1000) + 400, member)
+        return db_handler.insert_score((-2/90) * (delta-1000) + 400, member)
     if delta < 100000:
-        db_handler.insert_score((-2/900) * (delta-10000) + 200, member)
+        return db_handler.insert_score((-2/900) * (delta-10000) + 200, member)
 
 
 
