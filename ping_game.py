@@ -19,6 +19,11 @@ def initiate_ping_event():
 def score_ping(member, delta):
     """
     calculates score and updates to database
+
+    Scoring is based on how fast the players can respond to an event.
+    The score starts at 1000 points and slopes down to 800 points after 10 seconds,
+    then to 600 points after 100 seconds, 400, after 1000 seconds etc.
+
     Score Equation is: y = m(x-z) + b
     y = score
     m = slope
@@ -33,15 +38,17 @@ def score_ping(member, delta):
     y = -2/900 * (x-10000) + 200        if x < 100000 sec
     """
     if delta < 10:
-        return db_handler.insert_score((-20) * delta + 1000, member)
+        db_handler.insert_score((-20) * delta + 1000, member)
+        return int((-20) * delta + 1000)
     if delta < 100:
-        return db_handler.insert_score((-20 / 9) * (delta-10) + 800, member)
+        db_handler.insert_score((-20 / 9) * (delta-10) + 800, member)
+        return int((-20 / 9) * (delta-10) + 800)
     if delta < 1000:
-        return db_handler.insert_score((-2/9) * (delta-100) + 600, member)
+        db_handler.insert_score((-2/9) * (delta-100) + 600, member)
     if delta < 10000:
-        return db_handler.insert_score((-2/90) * (delta-1000) + 400, member)
+        db_handler.insert_score((-2/90) * (delta-1000) + 400, member)
     if delta < 100000:
-        return db_handler.insert_score((-2/900) * (delta-10000) + 200, member)
+        db_handler.insert_score((-2/900) * (delta-10000) + 200, member)
 
 
 

@@ -32,7 +32,6 @@ class Looper:
         nextping = self.boterate.get_ping_timestamp()
         if nextping is None:
             self.boterate.set_next_ping_timestamp(datetime.now())
-            self.boterate.initiate_ping()
             self.boterate.set_next_ping_timestamp(make_random_time())
             await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
             return
@@ -41,7 +40,6 @@ class Looper:
         print(datetime.now().astimezone())
         print(nextping)
         if nextping < datetime.now().astimezone():
-            self.boterate.initiate_ping()
             self.boterate.set_next_ping_timestamp(make_random_time())
             await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
         return

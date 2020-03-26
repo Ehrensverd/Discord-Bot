@@ -65,15 +65,15 @@ async def on_user_update(old, updated):
 @bot.command()
 async def pong(ctx):
     """ Chat command used to score after 'ping!' is issued by bot. the faster the more points"""
-    ad =datetime.now().astimezone() + timedelta
+    ad = datetime.now().astimezone()
     bd = boterate.get_ongoing_ping_timestamp()[0]
-    delta = datetime.now().astimezone() - boterate.get_ongoing_ping_timestamp()[0]
+    delta = (ad - bd).total_seconds()
     print(ad)
     print(bd)
     print(delta)
     if not boterate.has_scored(ctx.author.id):
         points = ping_game.score_ping(ctx.author.id, delta)
-        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('Scored points: ', points[0], 'You ponged withing ',delta, 'seconds.')
+        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send(('Scored points: ' + str(points) + 'You ponged withing ' + str(delta) + 'seconds.'))
 
 """
 
