@@ -92,9 +92,13 @@ class BotOperator:
         return member.id, member.name, member.discriminator, member.nick
 
 
-    def set_next_ping_timestamp(self, timestamp):
+    async def set_next_ping_timestamp(self, timestamp, bot,GUILD_ID):
         """Inserts a new timestamp to table and updates active"""
+
+        db_handler.activate_ping_event()
+        await bot.get_guild(int(GUILD_ID)).get_channel(689397500863578122).send('ping!')
         db_handler.insert_ping_event(timestamp)
+
 
     def get_ping_timestamp(self):
         """Gets newest ping timestamp from database.  """
@@ -103,9 +107,6 @@ class BotOperator:
     def get_ongoing_ping_timestamp(self):
         return db_handler.query_timestamp_ongoing_ping()
 
-    def initiate_ping(self):
-        """Ensure players can score again. Sets has_scored to false, updates daily score"""
-        pass
     def update_member_score(self, member, time_since_pon):
         db_handler.insert_scored()
 

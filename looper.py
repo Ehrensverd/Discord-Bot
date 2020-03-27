@@ -1,3 +1,5 @@
+import asyncio
+
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import os
@@ -31,15 +33,18 @@ class Looper:
 
         nextping = self.boterate.get_ping_timestamp()
         if nextping is None:
-            self.boterate.set_next_ping_timestamp(datetime.now())
-            self.boterate.set_next_ping_timestamp(make_random_time())
+            await self.boterate.set_next_ping_timestamp(datetime.now())
             await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
+            await self.boterate.set_next_ping_timestamp(make_random_time())
             return
 
         nextping = nextping[0]
         print(datetime.now().astimezone())
         print(nextping)
         if nextping < datetime.now().astimezone():
-            self.boterate.set_next_ping_timestamp(make_random_time())
-            await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('ping!')
-        return
+            await self.boterate.set_next_ping_timestamp(make_random_time(), self.bot, self.GUILD_ID)
+            return
+
+        if randint(0, 500) == 0:
+            await self.bot.get_guild(int(self.GUILD_ID)).get_channel(689397500863578122).send('pang!')
+            return

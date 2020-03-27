@@ -613,3 +613,4 @@ code_tester.py
 /venv/lib/python3.8/site-packages/setuptools-40.8.0-py3.8.egg
 /venv/lib64/
 /venv/pyvenv.cfg
+/.idea/

@@ -1,9 +1,14 @@
+import asyncio
 import os
+from random import randint
+
 import psycopg2
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 load_dotenv()
 env_pw = os.getenv('DB_PW')
+
 
 
 def db_connector(func):
@@ -68,19 +73,20 @@ def find_member_id(cursor, user_id):
 
 
 @db_connector
-def insert_ping_event(cursor, timestamp):
-    """Inserts an  ping event and updates all necessary fields
-    Sets all ping events active field to false
-    Sets new ongoing ping event active to true
-    Inserts tomorrows ping even with active to false
-    Updates score table collum has scored to False and Daily score to 0
-    """
+def activate_ping_event(cursor):
+    """Activates an ping event and deactivates previous once"""
     cursor.execute(""" UPDATE ping_events set active=FALSE where active=TRUE""")
-    cursor.execute(""" UPDATE ping_events set active=TRUE where ping_id IN( SELECT max(ping_id) FROM ping_events);""")
+    cursor.execute(""" UPDATE ping_events set ping_time=(%s), active=TRUE  where ping_id IN( SELECT max(ping_id) FROM ping_events);""", (datetime.now().astimezone() + timedelta(seconds=0.5),))
+
+
+
+@db_connector
+def insert_ping_event(cursor, timestamp):
+    """Inserts an  ping event and refreshes score table fields"""
     postgres_insert_query = """ INSERT INTO ping_events (ping_time, active) VALUES (%s,FALSE) ON CONFLICT DO NOTHING"""
     cursor.execute(""" UPDATE score set has_scored=default, daily_score=default;""")
-    cursor.execute(postgres_insert_query, (timestamp,))
 
+    cursor.execute(postgres_insert_query, (timestamp,))
 
 
 @db_connector
